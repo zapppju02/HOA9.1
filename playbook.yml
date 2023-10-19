@@ -1,0 +1,40 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Non-Zero return
+    shell: "ls | grep wp-config.php"
+    register: wp
+    failed_when: "wp.rc not in [0,1]"
+
+  - name: installing epel-release
+    yum:
+      name:
+        - epel-release
+    when: ansible_distribution == "CentOS"
+
+  - name: Update Upgrade for CentOS Node
+    yum:
+      update_cache: yes
+      update_only: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: Update Upgrade for Ubuntu
+    apt:
+      update_cache: yes
+      upgrade: dist
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: ubuntu_prometheus
+  become: true
+  roles:
+    - role: ubuntu_prometheus
+      source: https://github.com/prometheus/prometheus/releases/download/v2.39.1/prometheus-2.39.1.linux-amd64.tar.gz
+
+- hosts: centos_prometheus
+  become: true
+  roles:
+    - role: centos_prometheus
+      source: https://github.com/prometheus/prometheus/releases/download/v2.39.1/prometheus-2.39.1.linux-amd64.tar.gz
