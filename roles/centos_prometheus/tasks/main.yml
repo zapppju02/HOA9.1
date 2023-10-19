@@ -12,10 +12,6 @@
     owner: root
     group: root
 
-- name: Adding Prometheus exe
-  shell: |
-    cd ~/prometheus/prometheus*
-    cp -r . /usr/local/bin/prometheus
 - name: Copying Prometheus Service file
   copy:
     src: prometheus.service
